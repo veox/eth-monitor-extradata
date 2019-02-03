@@ -25,7 +25,8 @@ def detect_progpow_vote(extradata, nbytes=MAX_SCAN):
         print('Error while detecting vote!')
         pp(err.args)
         badpos = err.args[2]
-        return 'CRAP', max(0, badpos)
+        # second pass, more constrained
+        return detect_progpow_vote(extradata, nbytes=badpos)
 
     choices = ['PPYE', 'PPNO', 'PPDC', 'PPWK']
     votes = [choice for choice in choices if choice in scan]
