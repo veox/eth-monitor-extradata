@@ -21,8 +21,9 @@ MAX_SCAN = 16
 def detect_progpow_vote(extradata):
     try:
         scan = to_text(extradata[:MAX_SCAN])
-    except UnicodeDecodeError:
-        return 'CRAP'
+    except UnicodeDecodeError as e:
+        safechars = e[2]
+        return 'CRAP', safechars
 
     choices = ['PPYE', 'PPNO', 'PPDC', 'PPWK']
     votes = [choice for choice in choices if choice in scan]
@@ -34,15 +35,17 @@ def detect_progpow_vote(extradata):
     else: # len(votes) == 0
         vote = 'NONE'
 
-    return vote
+    return vote, MAX_SCAN
 
 def handle_new_block(blockhash):
     block = w3.eth.getBlock(blockhash)
     blocknum = block['number']
     extradata = block['extraData']
-    vote = detect_progpow_vote(extradata)
+    vote, safechars = detect_progpow_vote(extradata)
 
-    print(blocknum, to_hex(blockhash), vote, to_text(extradata)[:MAX_SCAN])
+    extratext = to_text(extradata)[:safechars]
+
+    print(blocknum, to_hex(blockhash), vote, extratext)
     # TODO: inspect ommers
 
     return
