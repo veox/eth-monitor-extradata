@@ -13,11 +13,16 @@ from eth_utils import (
 )
 from web3.auto import w3
 
+
 # scan this many characters at most
 MAX_SCAN = 16
 
+
 def detect_progpow_vote(extradata):
-    scan = to_text(extradata[:MAX_SCAN])
+    try:
+        scan = to_text(extradata[:MAX_SCAN])
+    except UnicodeDecodeError:
+        return 'CRAP'
 
     choices = ['PPYE', 'PPNO', 'PPDC', 'PPWK']
     votes = [choice for choice in choices if choice in scan]
