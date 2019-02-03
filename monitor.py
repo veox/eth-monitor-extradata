@@ -22,8 +22,8 @@ def detect_progpow_vote(extradata):
     try:
         scan = to_text(extradata[:MAX_SCAN])
     except UnicodeDecodeError as e:
-        safechars = e.args[2]
-        return 'CRAP', safechars
+        badpos = e.args[2]
+        return 'CRAP', max(0, badpos - 1)
 
     choices = ['PPYE', 'PPNO', 'PPDC', 'PPWK']
     votes = [choice for choice in choices if choice in scan]
@@ -43,7 +43,7 @@ def handle_new_block(blockhash):
     extradata = block['extraData']
     vote, safechars = detect_progpow_vote(extradata)
 
-    extratext = to_text(extradata)[:safechars]
+    extratext = to_text(extradata[:safechars])
 
     print(blocknum, to_hex(blockhash), vote, extratext)
     # TODO: inspect ommers
