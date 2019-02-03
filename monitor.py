@@ -14,16 +14,18 @@ from eth_utils import (
 from web3.auto import w3
 
 
-# scan this many characters at most
+# scan this many bytes at most
 MAX_SCAN = 16
 
 
-def detect_progpow_vote(extradata):
+def detect_progpow_vote(extradata, nbytes=MAX_SCAN):
     try:
-        scan = to_text(extradata[:MAX_SCAN])
-    except UnicodeDecodeError as e:
-        badpos = e.args[2]
-        return 'CRAP', max(0, badpos - 1)
+        scan = to_text(extradata[:nbytes])
+    except UnicodeDecodeError as err:
+        print('Error while detecting vote!')
+        pp(err.args)
+        badpos = err.args[2]
+        return 'CRAP', max(0, badpos)
 
     choices = ['PPYE', 'PPNO', 'PPDC', 'PPWK']
     votes = [choice for choice in choices if choice in scan]
@@ -35,18 +37,25 @@ def detect_progpow_vote(extradata):
     else: # len(votes) == 0
         vote = 'NONE'
 
-    return vote, MAX_SCAN
+    return vote, nbytes
 
 def handle_new_block(blockhash):
     block = w3.eth.getBlock(blockhash)
     blocknum = block['number']
     extradata = block['extraData']
+
     vote, safechars = detect_progpow_vote(extradata)
 
-    extratext = to_text(extradata[:safechars])
+    try:
+        extratext = to_text(extradata[:safechars])
+    except UnicodeDecodeError as err:
+        print('Error while preparing extratext!')
+        pp(err.args)
+        extratext = ''
 
     print(blocknum, to_hex(blockhash), vote, extratext)
-    # TODO: inspect ommers
+
+    # FIXME: inspect ommers!
 
     return
 
