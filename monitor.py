@@ -22,7 +22,7 @@ def detect_progpow_vote(extradata):
     try:
         scan = to_text(extradata[:MAX_SCAN])
     except UnicodeDecodeError as e:
-        safechars = e[2]
+        safechars = e.args[2]
         return 'CRAP', safechars
 
     choices = ['PPYE', 'PPNO', 'PPDC', 'PPWK']
