@@ -22,8 +22,6 @@ def detect_progpow_vote(extradata, nbytes=MAX_SCAN):
     try:
         scan = to_text(extradata[:nbytes])
     except UnicodeDecodeError as err:
-        # print('Error while detecting vote!')
-        # pp(err.args)
         badpos = err.args[2]
         # second pass, more constrained
         return detect_progpow_vote(extradata, nbytes=badpos)
@@ -59,8 +57,6 @@ def handle_new_block(blockhash, recursive_call=False, ommertext=None):
     try:
         extratext = to_text(extradata[:safechars])
     except UnicodeDecodeError as err:
-        # print('Error while preparing extratext!')
-        # pp(err.args)
         extratext = ''
 
     # NOTE: handling (printing) ommers before printing non-ommer block info
