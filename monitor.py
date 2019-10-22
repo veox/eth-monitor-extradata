@@ -34,7 +34,7 @@ def detect_progpow_vote(extradata, nbytes=MAX_SCAN):
     elif len(votes) == 1:
         vote = votes[0]
     else: # len(votes) == 0
-        vote = 'NONE'
+        vote = '----'
 
     return vote, nbytes
 
